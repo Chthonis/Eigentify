@@ -1,0 +1,83 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <TextView
+        android:id="@+id/lastTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="@android:color/black" />
+
+
+    <TextView
+        android:id="@+id/firstTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@+id/lastTitle"
+        android:layout_marginRight="10dp"
+        android:textColor="@android:color/black" />
+
+    <TextView
+        android:id="@+id/majorTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/lastTitle"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="15dp"
+        android:textColor="@android:color/black" />
+
+    <TextView
+        android:id="@+id/miscTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/majorTitle"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="15dp"
+        android:textColor="@android:color/black" />
+
+    <ImageView
+        android:id="@+id/imgIcon"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_alignParentLeft="true" />
+
+
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/firstTitle"
+        android:text="Name: "
+        android:layout_marginRight="10dp"
+        android:textColor="@android:color/black" />
+    <TextView
+        android:id="@+id/major"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/majorTitle"
+        android:layout_below="@+id/lastTitle"
+        android:layout_marginTop="15dp"
+        android:text="Major: "
+        android:layout_marginRight="10dp"
+        android:textColor="@android:color/black" />
+    <TextView
+        android:id="@+id/misc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/miscTitle"
+        android:layout_below="@+id/majorTitle"
+        android:layout_marginTop="15dp"
+        android:text="Misc: "
+        android:layout_marginRight="10dp"
+        android:textColor="@android:color/black" />
+
+</RelativeLayout>
