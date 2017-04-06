@@ -10,6 +10,8 @@ import android.util.Log;
 import java.util.ArrayList;
 import com.kairos.*;
 import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.UnsupportedEncodingException;
 import java.io.ByteArrayOutputStream;
 
@@ -72,7 +74,22 @@ public class MainActivity extends AppCompatActivity {
             KairosListener listener = new KairosListener(){
                 @Override
                 public void onSuccess(String response) {
-                    // your code here!
+                    /* parse json response for person
+                    try{
+
+                        JSONObject myjson = new JSONObject(response);
+                        String person = myjson.getJSONObject("transaction").getString("subject_id");
+                        Log.d("KAIROS",person);
+                        //Intent sendToCard = new Intent()
+
+                    } catch(JSONException e) {
+                        e.printStackTrace();
+                        System.exit(-1);
+                    } finally{
+
+                    } */
+
+
                     Log.d("KAIROS", response);
                 }
 
