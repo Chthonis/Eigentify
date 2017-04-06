@@ -3,30 +3,14 @@ package com.example.dylan.eigentify;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.TextView;
 import android.view.View;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.RectF;
-import android.graphics.drawable.BitmapDrawable;
-import android.widget.ImageView;
-
-import com.google.android.gms.vision.Frame;
-import com.google.android.gms.vision.face.Face;
-import com.google.android.gms.vision.face.FaceDetector;
-import android.util.SparseArray;
-import android.widget.Toast;
-
 import android.util.Log;
-import java.util.List;
 import java.util.ArrayList;
-import android.widget.ListView;
-import android.graphics.BitmapFactory;
-
-
+import com.kairos.*;
+import org.json.JSONException;
+import java.io.UnsupportedEncodingException;
 import java.io.ByteArrayOutputStream;
 
 public class MainActivity extends AppCompatActivity {
@@ -36,9 +20,11 @@ public class MainActivity extends AppCompatActivity {
         System.loadLibrary("native-lib");
     }
 
+    static final int STORE_IMAGE_CAPTURE = 1;
+    static final int RECOGNIZE_IMAGE_CAPTURE = 2;
+
     // Create database
     ArrayList<PersonInfo> imgArr = new ArrayList<PersonInfo>();
-    ImageAdapter adapter;
     DBHandler db = new DBHandler(this);
 
     @Override
@@ -46,108 +32,68 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        db = new DBHandler(this);
     }
-
-    /**
-     * A native method that is implemented by the 'native-lib' native library,
-     * which is packaged with this application.
-     */
-    //public native String stringFromJNI();
-    static final int STORE_IMAGE_CAPTURE = 1;
-    static final int RECOGNIZE_IMAGE_CAPTURE = 2;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
 
+        // FACE DETECTION
         if(requestCode == STORE_IMAGE_CAPTURE && resultCode == RESULT_OK){
-            // open "Enter Info" screen
-            //startActivity(new Intent(MainActivity.this, EnterInfoActivity.class));
-            // convert bitmap (picture) to bytearray and send to "Enter Info" screen
-
-            // Initialize bitmap and imageview
-            Bitmap tempBitmap;
-            //ImageView myImageView = (ImageView) findViewById(R.id.imageView);
 
             // convert picture to bitmap
             Bundle extras = data.getExtras();
-            Bitmap myBitmap = (Bitmap) extras.get("data");
+            Bitmap image = (Bitmap) extras.get("data");
 
-            tempBitmap = Bitmap.createBitmap(myBitmap.getWidth(),myBitmap.getHeight(), Bitmap.Config.RGB_565);
-
-            //draw rectangle
-            Paint myRectPaint = new Paint();
-            myRectPaint.setStrokeWidth(5);
-            myRectPaint.setColor(Color.RED);
-            myRectPaint.setStyle(Paint.Style.STROKE);
-
-            //more bitmap stuff
-            Canvas tempCanvas = new Canvas(tempBitmap);
-            tempCanvas.drawBitmap(myBitmap,0,0,null);
-
-            // start face detector
-            FaceDetector faceDetector = new FaceDetector.Builder(getApplicationContext()).setTrackingEnabled(false).build();
-            if(!faceDetector.isOperational()) {
-                Toast.makeText(this,"Couldnot set up the Face Detector", Toast.LENGTH_LONG).show();
-                return;
-            }
-
-            // create frame
-            Frame frame = new Frame.Builder().setBitmap(myBitmap).build();
-            SparseArray <Face> faces = faceDetector.detect(frame);
-
-            // get coords
-            for(int i=0; i<faces.size();i++) {
-                Face thisFace = faces.valueAt(i);
-                float x1 = thisFace.getPosition().x;
-                float y1 = thisFace.getPosition().y;
-                float x2 = x1 + thisFace.getWidth();
-                float y2 = y1 + thisFace.getHeight();
-                tempCanvas.drawRoundRect(new RectF(x1,y1,x2,y2),2,2,myRectPaint);
-            }
-
-            // set imageView to image
-            //myImageView.setImageDrawable(new BitmapDrawable(getResources(),tempBitmap));
-
-            //Converts to bit array
-            int i = 0;
-            Log.d("Insert: ", "Inserting ..");
-            Bitmap image = tempBitmap;
+            // convert bitmap to byte array
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             image.compress(Bitmap.CompressFormat.JPEG, 100, stream);
             byte imageInByte[] = stream.toByteArray();
 
-            //Stores information in database
-            //db.addPersonInfo(new PersonInfo(i, "Dylan", "Leggio", "Computer Science", "Senior", imageInByte));
-
-            // send picture to "Enter Info" screen
+            // send bitmap to "Enter Info" Screen
             Intent sendPicture = new Intent(MainActivity.this, EnterInfoActivity.class);
             sendPicture.putExtra("picture",imageInByte);
             startActivity(sendPicture);
 
         }
 
+        // FACE RECOGNITION
         else if (requestCode == RECOGNIZE_IMAGE_CAPTURE && resultCode == RESULT_OK){
+
             // convert picture to bitmap
             Bundle extras = data.getExtras();
             Bitmap myBitmap = (Bitmap) extras.get("data");
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            myBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-            byte[] byteArray = stream.toByteArray();
 
-            Log.d("Reading:","Reading all people...");
-            List<PersonInfo> people = db.getAllPeople();
-            for(PersonInfo person : people){
-                String log = "Name: " + person.getFirst();
-                Log.d("Person::",log);
+            // instantiate a new kairos instance
+            Kairos myKairos = new Kairos();
+            String app_id = "75317862";
+            String api_key = "4dde039f934d6cbd1001bee205dc8c17";
+            myKairos.setAuthentication(this,app_id,api_key);
+            KairosListener listener = new KairosListener(){
+                @Override
+                public void onSuccess(String response) {
+                    // your code here!
+                    Log.d("KAIROS", response);
+                }
+
+                @Override
+                public void onFail(String response) {
+                    // your code here!
+                    Log.d("KAIROS", response);
+                }
+            };
+
+            // attempt to recognize
+
+            try{
+                myKairos.recognize(myBitmap,"friends",null,null,null,null,listener);
+            } catch (JSONException|UnsupportedEncodingException e) {
+                Log.d("KAIROS", "JSON/ENCODING ERROR");
+                e.printStackTrace();
+                System.exit(-1);
+            } finally{
+
             }
-
-
-            // send to "Info card" screen
-            Intent sendPicture = new Intent(MainActivity.this, InfoCardActivity.class);
-            sendPicture.putExtra("picture",byteArray);
-
-            // open "Info Card" screen
-            startActivity(sendPicture);
 
         }
 
