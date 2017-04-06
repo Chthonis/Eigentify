@@ -70,7 +70,7 @@ public class EnterInfoActivity extends AppCompatActivity {
     public void storeInfo(View view){
 
         // add person to database
-        db.addPersonInfo(new PersonInfo(0, first.getText().toString(), last.getText().toString(), year.getText().toString(), major.getText().toString(), byteArray));
+        db.addPersonInfo(new PersonInfo(0, first.getText().toString(), last.getText().toString(), major.getText().toString(), year.getText().toString(), byteArray));
 
         // convert byte array to bitmap for processing
         Bitmap bmp = BitmapFactory.decodeByteArray(byteArray,0,byteArray.length);

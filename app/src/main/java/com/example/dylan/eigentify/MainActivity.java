@@ -74,23 +74,14 @@ public class MainActivity extends AppCompatActivity {
             KairosListener listener = new KairosListener(){
                 @Override
                 public void onSuccess(String response) {
-                    /* parse json response for person
-                    try{
-
-                        JSONObject myjson = new JSONObject(response);
-                        String person = myjson.getJSONObject("transaction").getString("subject_id");
-                        Log.d("KAIROS",person);
-                        //Intent sendToCard = new Intent()
-
-                    } catch(JSONException e) {
-                        e.printStackTrace();
-                        System.exit(-1);
-                    } finally{
-
-                    } */
-
-
+                    // parse json response for person
+                    String lastName = response.substring(response.indexOf("subject_id")+13,response.indexOf("\",\"confidence"));
                     Log.d("KAIROS", response);
+
+                    // send last name to "Info Card" activity for lookup
+                    Intent sendToCard = new Intent(MainActivity.this,InfoCardActivity.class);
+                    sendToCard.putExtra("name",lastName);
+                    startActivity(sendToCard);
                 }
 
                 @Override
