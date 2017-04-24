@@ -74,9 +74,17 @@ public class MainActivity extends AppCompatActivity {
             KairosListener listener = new KairosListener(){
                 @Override
                 public void onSuccess(String response) {
+                    Log.d("KAIROS", response);
+
+                    // check for errors
+                    if(response.contains("Errors"))
+                    {
+                        startActivity(new Intent(MainActivity.this,recognizeFail.class));
+                        return;
+                    }
+
                     // parse json response for person
                     String lastName = response.substring(response.indexOf("subject_id")+13,response.indexOf("\",\"confidence"));
-                    Log.d("KAIROS", response);
 
                     // send last name to "Info Card" activity for lookup
                     Intent sendToCard = new Intent(MainActivity.this,InfoCardActivity.class);
@@ -125,5 +133,9 @@ public class MainActivity extends AppCompatActivity {
         if(takePictureIntent.resolveActivity(getPackageManager()) != null) {
             startActivityForResult(takePictureIntent, RECOGNIZE_IMAGE_CAPTURE);
         }
+    }
+
+    public void listFriends(View view){
+        startActivity(new Intent(MainActivity.this,FriendsActivity.class));
     }
 }
